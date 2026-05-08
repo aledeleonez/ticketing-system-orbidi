@@ -17,25 +17,6 @@ Sistema de ticketing full-stack desarrollado como prueba técnica para Orbidi.
 - **Enums nativos de Postgres** para `ticket_status`, `ticket_priority` y `notification_type`: integridad a nivel de BD sin depender solo de validación en Python.
 - **Migraciones con Alembic desde el primer día**, una por entrega lógica. No se editan migraciones ya aplicadas.
 
-## Estructura
-.
-├── backend/
-│   ├── app/
-│   │   ├── api/v1/         # Endpoints
-│   │   ├── core/           # Config y seguridad (JWT)
-│   │   ├── db/             # Sesión SQLAlchemy
-│   │   ├── models/         # Modelos ORM
-│   │   ├── schemas/        # Schemas Pydantic
-│   │   └── services/       # Lógica auxiliar (Google auth)
-│   ├── alembic/            # Migraciones
-│   ├── tests/
-│   ├── Dockerfile
-│   └── requirements.txt
-├── frontend/               # (pendiente)
-├── storage/attachments/    # Volumen para adjuntos
-├── docker-compose.yml
-└── README.md
-
 ## Cómo levantarlo
 
 ### Requisitos previos
@@ -47,9 +28,11 @@ Sistema de ticketing full-stack desarrollado como prueba técnica para Orbidi.
 
 Crea un archivo `.env` en la raíz del proyecto con:
 
+```bash
 GOOGLE_CLIENT_ID=tu-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=tu-client-secret
 JWT_SECRET=cadena-aleatoria-larga
+```
 
 Para generar un `JWT_SECRET` seguro:
 
