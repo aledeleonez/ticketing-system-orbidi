@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: orbidi
+      POSTGRES_PASSWORD: orbidi
+      POSTGRES_DB: orbidi
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orbidi"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://orbidi:orbidi@db:5432/orbidi
+      JWT_SECRET: dev-secret-change-me
+      JWT_ALGORITHM: HS256
+      JWT_EXPIRES_MINUTES: 60
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      CORS_ORIGINS: http://localhost:3000
+      ATTACHMENTS_DIR: /app/storage/attachments
+      MAX_ATTACHMENT_MB: "10"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./storage/attachments:/app/storage/attachments
+    depends_on:
+      db:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  postgres_data:
