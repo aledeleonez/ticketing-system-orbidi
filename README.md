@@ -84,6 +84,11 @@ curl http://localhost:8000/health
 | GET    | `/health`                | Healthcheck                              | -    |
 | POST   | `/api/v1/auth/google`    | Login con id_token de Google → JWT propio | -    |
 | GET    | `/api/v1/auth/me`        | Datos del usuario autenticado            | ✓    |
+| GET    | `/api/v1/tickets`            | Lista con filtros, orden y paginación   | ✓ |
+| POST   | `/api/v1/tickets`            | Crear ticket                            | ✓ |
+| GET    | `/api/v1/tickets/{id}`       | Detalle de ticket                       | ✓ |
+| PATCH  | `/api/v1/tickets/{id}`       | Actualizar ticket parcialmente          | ✓ |
+| GET    | `/api/v1/users`              | Lista de usuarios                       | ✓ |
 
 Documentación interactiva (Swagger UI): http://localhost:8000/docs
 
