@@ -20,6 +20,11 @@ Sistema de ticketing full-stack desarrollado como prueba técnica para Orbidi.
 - **TanStack Query** para fetching y caché. Las mutaciones invalidan la query `["tickets"]` para que las dos vistas (lista, próximamente Kanban) compartan estado y se refresquen al instante.
 - **Variables de entorno por contexto**: `NEXT_PUBLIC_API_URL` para el navegador (`http://localhost:8000`) e `INTERNAL_API_URL` para llamadas server-side desde dentro del contenedor (`http://backend:8000`). Sin esta separación el callback `jwt` no podía hablar con el backend.
 - **shadcn/ui sobre Radix**: componentes accesibles, con estilos en CSS variables, sin acoplamiento a un sistema de diseño cerrado.
+- **Lista y Kanban comparten estado**: ambas vistas consumen la misma query `["tickets", filters]` de TanStack Query. Cambiar el estado de un ticket desde cualquier vista (drag & drop en Kanban o select en el detalle) invalida la query y refresca todo automáticamente.
+- **Drag & drop con `dnd-kit`**: elegido sobre `react-beautiful-dnd` porque este último está discontinuado. Se usa `pointerWithin` como detección de colisión y `activationConstraint: { distance: 5 }` para distinguir click (abrir detalle) de drag.
+- **Optimistic update al cambiar columna**: el cambio de estado se aplica primero a la caché de TanStack Query y luego al backend; si la petición falla, se revierte y se notifica al usuario. Da una experiencia inmediata sin pagar el round-trip.
+- **Detalle del ticket en dialog modal**: en lugar de una ruta `/tickets/[id]` propia, el detalle se muestra en un Dialog superpuesto. Permite mantener el contexto (lista o Kanban detrás) y simplifica navegación.
+- **Hooks centralizados en `lib/hooks.ts`**: queries y mutaciones se exponen como hooks (`useTickets`, `useTicket`, `useUpdateTicket`, `useUsers`, `useComments`, `useCreateComment`). Evita repetir lógica de fetching y centraliza la invalidación de caché.
 
 ## Cómo levantarlo
 
@@ -83,16 +88,18 @@ curl http://localhost:8000/health
 
 ## Endpoints disponibles
 
-| Método | Ruta                     | Descripción                              | Auth |
-|--------|--------------------------|------------------------------------------|------|
-| GET    | `/health`                | Healthcheck                              | -    |
-| POST   | `/api/v1/auth/google`    | Login con id_token de Google → JWT propio | -    |
-| GET    | `/api/v1/auth/me`        | Datos del usuario autenticado            | ✓    |
-| GET    | `/api/v1/tickets`            | Lista con filtros, orden y paginación   | ✓ |
-| POST   | `/api/v1/tickets`            | Crear ticket                            | ✓ |
-| GET    | `/api/v1/tickets/{id}`       | Detalle de ticket                       | ✓ |
-| PATCH  | `/api/v1/tickets/{id}`       | Actualizar ticket parcialmente          | ✓ |
-| GET    | `/api/v1/users`              | Lista de usuarios                       | ✓ |
+| Método | Ruta                            | Descripción                              | Auth |
+|--------|---------------------------------|------------------------------------------|------|
+| GET    | `/health`                       | Healthcheck                              | -    |
+| POST   | `/api/v1/auth/google`           | Login con id_token de Google → JWT propio | -   |
+| GET    | `/api/v1/auth/me`               | Datos del usuario autenticado            | ✓    |
+| GET    | `/api/v1/tickets`               | Lista con filtros, orden y paginación    | ✓    |
+| POST   | `/api/v1/tickets`               | Crear ticket                             | ✓    |
+| GET    | `/api/v1/tickets/{id}`          | Detalle de ticket                        | ✓    |
+| PATCH  | `/api/v1/tickets/{id}`          | Actualizar ticket parcialmente           | ✓    |
+| GET    | `/api/v1/tickets/{id}/comments` | Listar comentarios de un ticket          | ✓    |
+| POST   | `/api/v1/tickets/{id}/comments` | Añadir comentario                        | ✓    |
+| GET    | `/api/v1/users`                 | Lista de usuarios                        | ✓    |
 
 Documentación interactiva (Swagger UI): http://localhost:8000/docs
 
@@ -119,5 +126,7 @@ He utilizado Claude (Anthropic) como copiloto a lo largo del desarrollo, princip
 - Resolver errores de dependencias y compatibilidad (Pydantic v2, `email-validator`, transports de `google-auth`).
 - Plantear el flujo OAuth en dos pasos (id_token → JWT propio).
 - Revisar buenas prácticas (timestamps con zona, enums en BD, separación de capas).
+- Discusión sobre la arquitectura del Kanban: detección de colisión, optimistic updates con TanStack Query y separación entre hooks de fetching y componentes.
+- Resolución de incidencias propias del entorno (dockerización del frontend, variables `NEXT_PUBLIC_` vs server-side, compatibilidad con Next.js 16 y Tailwind v4).
 
 Todas las decisiones técnicas se han revisado y entendido antes de incorporarse al código.
