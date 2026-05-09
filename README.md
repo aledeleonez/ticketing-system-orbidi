@@ -16,6 +16,10 @@ Sistema de ticketing full-stack desarrollado como prueba técnica para Orbidi.
 - **`TIMESTAMPTZ` en Postgres**: todas las columnas de fecha guardan zona horaria explícita (`datetime.now(timezone.utc)`) para evitar ambigüedades con datetimes naive.
 - **Enums nativos de Postgres** para `ticket_status`, `ticket_priority` y `notification_type`: integridad a nivel de BD sin depender solo de validación en Python.
 - **Migraciones con Alembic desde el primer día**, una por entrega lógica. No se editan migraciones ya aplicadas.
+- **Auth.js v5 (NextAuth) en el frontend**: gestiona el login con Google y la sesión. En el callback `jwt` se intercambia el `id_token` de Google por el JWT propio del backend, y se guarda en la sesión. Así el resto de la app llama a la API con un único token estable.
+- **TanStack Query** para fetching y caché. Las mutaciones invalidan la query `["tickets"]` para que las dos vistas (lista, próximamente Kanban) compartan estado y se refresquen al instante.
+- **Variables de entorno por contexto**: `NEXT_PUBLIC_API_URL` para el navegador (`http://localhost:8000`) e `INTERNAL_API_URL` para llamadas server-side desde dentro del contenedor (`http://backend:8000`). Sin esta separación el callback `jwt` no podía hablar con el backend.
+- **shadcn/ui sobre Radix**: componentes accesibles, con estilos en CSS variables, sin acoplamiento a un sistema de diseño cerrado.
 
 ## Cómo levantarlo
 
