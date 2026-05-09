@@ -19,9 +19,9 @@ services:
     build: ./backend
     environment:
       DATABASE_URL: postgresql+psycopg://orbidi:orbidi@db:5432/orbidi
-      JWT_SECRET: dev-secret-change-me
+      JWT_SECRET: ${JWT_SECRET}
       JWT_ALGORITHM: HS256
-      JWT_EXPIRES_MINUTES: 60
+      JWT_EXPIRES_MINUTES: ${JWT_EXPIRES_MINUTES:-60}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       CORS_ORIGINS: http://localhost:3000
       ATTACHMENTS_DIR: /app/storage/attachments
@@ -35,6 +35,25 @@ services:
       db:
         condition: service_healthy
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build: ./frontend
+    environment:
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      AUTH_GOOGLE_ID: ${GOOGLE_CLIENT_ID}
+      AUTH_GOOGLE_SECRET: ${GOOGLE_CLIENT_SECRET}
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      INTERNAL_API_URL: http://backend:8000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    command: npm run dev
 
 volumes:
   postgres_data:
