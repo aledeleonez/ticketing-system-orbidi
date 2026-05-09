@@ -23,6 +23,7 @@ import {
   useCreateComment,
 } from "@/lib/hooks";
 import type { Ticket, TicketStatus, TicketPriority } from "@/lib/types";
+import { TicketAttachments } from "./ticket-attachments";
 
 const UNASSIGNED = "__unassigned__";
 
@@ -160,7 +161,7 @@ export function TicketDetailContent({ ticket }: Props) {
           {format(new Date(ticket.updated_at), "dd MMM yyyy HH:mm")}
         </span>
       </div>
-
+      <TicketAttachments ticketId={ticket.id} />
       <hr />
 
       {/* Comentarios */}

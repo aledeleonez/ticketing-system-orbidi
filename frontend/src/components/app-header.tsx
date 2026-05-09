@@ -9,6 +9,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { NotificationsPopover } from "@/components/notifications-popover";
 
 export function AppHeader() {
   const { data: session } = useSession();
@@ -26,6 +27,7 @@ export function AppHeader() {
     <header className="border-b bg-white">
       <div className="flex items-center justify-between px-6 py-3">
         <h1 className="text-lg font-semibold">Orbidi Ticketing</h1>
+        <NotificationsPopover />
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Avatar className="h-8 w-8 cursor-pointer">

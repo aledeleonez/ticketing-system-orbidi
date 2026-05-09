@@ -7,6 +7,8 @@ import type {
   Comment,
   CommentCreateInput,
   User,
+  Attachment,
+  NotificationItem,
 } from "@/lib/types";
 
 export interface TicketsFilters {
@@ -100,6 +102,85 @@ export function useCreateComment(ticketId: number) {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["comments", ticketId] });
+    },
+  });
+}
+
+export function useAttachments(ticketId: number | null) {
+  return useQuery({
+    queryKey: ["attachments", ticketId],
+    queryFn: async () => {
+      const res = await api.get<Attachment[]>(
+        `/api/v1/tickets/${ticketId}/attachments`
+      );
+      return res.data;
+    },
+    enabled: ticketId !== null,
+  });
+}
+
+export function useUploadAttachment(ticketId: number) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await api.post<Attachment>(
+        `/api/v1/tickets/${ticketId}/attachments`,
+        form,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["attachments", ticketId] });
+    },
+  });
+}
+
+export function useDeleteAttachment(ticketId: number) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      await api.delete(`/api/v1/attachments/${id}`);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["attachments", ticketId] });
+    },
+  });
+}
+
+export function useNotifications() {
+  return useQuery({
+    queryKey: ["notifications"],
+    queryFn: async () => {
+      const res = await api.get<NotificationItem[]>("/api/v1/notifications");
+      return res.data;
+    },
+    refetchInterval: 20_000, // polling cada 20s
+  });
+}
+
+export function useNotificationsCount() {
+  return useQuery({
+    queryKey: ["notifications-count"],
+    queryFn: async () => {
+      const res = await api.get<{ unread: number }>("/api/v1/notifications/count");
+      return res.data.unread;
+    },
+    refetchInterval: 20_000,
+  });
+}
+
+export function useMarkAllRead() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      await api.post("/api/v1/notifications/read-all");
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["notifications"] });
+      qc.invalidateQueries({ queryKey: ["notifications-count"] });
     },
   });
 }
