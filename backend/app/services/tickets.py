@@ -6,6 +6,8 @@ from app.models.ticket import Ticket
 from app.models.user import User
 from app.models.enums import TicketStatus, TicketPriority
 from app.schemas.ticket import TicketCreate, TicketUpdate
+from app.models.enums import TicketStatus, TicketPriority, NotificationType
+from app.services import notifications as notifications_service
 
 SORTABLE_FIELDS = {
     "created_at": Ticket.created_at,
@@ -101,11 +103,21 @@ def create_ticket(db: Session, *, payload: TicketCreate, author: User) -> Ticket
     db.add(ticket)
     db.commit()
     db.refresh(ticket)
-    return get_ticket(db, ticket.id)  # recarga con relaciones
+
+    if ticket.assignee_id and ticket.assignee_id != author.id:
+        notifications_service.create_notification(
+            db,
+            user_id=ticket.assignee_id,
+            type=NotificationType.ASSIGNED,
+            ticket_id=ticket.id,
+            payload={"ticket_title": ticket.title, "by": author.name},
+        )
+
+    return get_ticket(db, ticket.id)
 
 
 def update_ticket(
-    db: Session, *, ticket_id: int, payload: TicketUpdate
+    db: Session, *, ticket_id: int, payload: TicketUpdate, actor: User
 ) -> Ticket:
     ticket = get_ticket(db, ticket_id)
     data = payload.model_dump(exclude_unset=True)
@@ -113,9 +125,43 @@ def update_ticket(
     if "assignee_id" in data:
         _assert_assignee_exists(db, data["assignee_id"])
 
+    old_status = ticket.status
+    old_assignee_id = ticket.assignee_id
+
     for field, value in data.items():
         setattr(ticket, field, value)
 
     db.commit()
     db.refresh(ticket)
+
+    notify_users: set[int] = set()
+
+    if "assignee_id" in data and ticket.assignee_id != old_assignee_id:
+        if ticket.assignee_id and ticket.assignee_id != actor.id:
+            notifications_service.create_notification(
+                db,
+                user_id=ticket.assignee_id,
+                type=NotificationType.ASSIGNED,
+                ticket_id=ticket.id,
+                payload={"ticket_title": ticket.title, "by": actor.name},
+            )
+
+    if "status" in data and ticket.status != old_status:
+        for uid in (ticket.author_id, ticket.assignee_id):
+            if uid and uid != actor.id:
+                notify_users.add(uid)
+        for uid in notify_users:
+            notifications_service.create_notification(
+                db,
+                user_id=uid,
+                type=NotificationType.STATUS_CHANGED,
+                ticket_id=ticket.id,
+                payload={
+                    "ticket_title": ticket.title,
+                    "from": old_status.value if hasattr(old_status, "value") else str(old_status),
+                    "to": ticket.status.value if hasattr(ticket.status, "value") else str(ticket.status),
+                    "by": actor.name,
+                },
+            )
+
     return get_ticket(db, ticket.id)

@@ -81,12 +81,12 @@ def update_ticket(
     ticket_id: int,
     payload: TicketUpdate,
     db: Session = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
 ):
     try:
         ticket = tickets_service.update_ticket(
-            db, ticket_id=ticket_id, payload=payload
-        )
+    db, ticket_id=ticket_id, payload=payload, actor=current_user
+    )
     except tickets_service.TicketNotFound:
         raise HTTPException(status_code=404, detail="Ticket not found")
     except tickets_service.AssigneeNotFound as e:
