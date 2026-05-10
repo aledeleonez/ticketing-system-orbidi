@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRES_MINUTES: int = 60
     GOOGLE_CLIENT_ID: str = ""
+    ANTHROPIC_API_KEY: str = ""
+    ANTHROPIC_MODEL: str = "claude-haiku-4-5"
     CORS_ORIGINS: str = "http://localhost:3000"
     ATTACHMENTS_DIR: str = "/app/storage/attachments"
     MAX_ATTACHMENT_MB: int = 10
