@@ -9,6 +9,8 @@ import type {
   User,
   Attachment,
   NotificationItem,
+  ChatMessage,
+  ChatResponse,
 } from "@/lib/types";
 
 export interface TicketsFilters {
@@ -179,6 +181,21 @@ export function useMarkAllRead() {
       await api.post("/api/v1/notifications/read-all");
     },
     onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["notifications"] });
+      qc.invalidateQueries({ queryKey: ["notifications-count"] });
+    },
+  });
+}
+
+export function useChatSend() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (messages: ChatMessage[]) => {
+      const res = await api.post<ChatResponse>("/api/v1/chat", { messages });
+      return res.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["tickets"] });
       qc.invalidateQueries({ queryKey: ["notifications"] });
       qc.invalidateQueries({ queryKey: ["notifications-count"] });
     },

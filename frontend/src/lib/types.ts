@@ -73,3 +73,20 @@ export interface NotificationItem {
   read_at: string | null;
   created_at: string;
 }
+
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface ToolCallRecord {
+  tool: string;
+  input: Record<string, unknown>;
+  output_summary: string;
+  success: boolean;
+}
+
+export interface ChatResponse {
+  reply: string;
+  operations: ToolCallRecord[];
+}

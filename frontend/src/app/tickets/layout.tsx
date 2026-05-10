@@ -1,4 +1,5 @@
 import { AppHeader } from "@/components/app-header";
+import { ChatPanel } from "@/components/chat/chat-panel";
 
 export default function TicketsLayout({
   children,
@@ -9,6 +10,7 @@ export default function TicketsLayout({
     <div className="min-h-screen bg-slate-50">
       <AppHeader />
       <main className="container mx-auto py-6 px-6">{children}</main>
+      <ChatPanel />
     </div>
   );
 }
