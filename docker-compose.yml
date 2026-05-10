@@ -23,6 +23,8 @@ services:
       JWT_ALGORITHM: HS256
       JWT_EXPIRES_MINUTES: ${JWT_EXPIRES_MINUTES:-60}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      ANTHROPIC_MODEL: claude-haiku-4-5
       CORS_ORIGINS: http://localhost:3000
       ATTACHMENTS_DIR: /app/storage/attachments
       MAX_ATTACHMENT_MB: "10"
