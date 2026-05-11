@@ -27,7 +27,7 @@ export function TicketsListView({ tickets, isLoading, onSelect }: Props) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-16">#</TableHead>
+            <TableHead className="w-16">ID</TableHead>
             <TableHead>Título</TableHead>
             <TableHead>Estado</TableHead>
             <TableHead>Prioridad</TableHead>

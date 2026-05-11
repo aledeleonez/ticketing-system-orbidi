@@ -15,10 +15,10 @@ export default function LoginPage() {
         </div>
         <Button
           onClick={() => signIn("google", { callbackUrl: "/tickets" })}
-          className="w-full"
+          className="w-full bg-red-600 hover:bg-red-700 text-white cursor-pointer"
           size="lg"
         >
-          Continuar con Google
+          Iniciar sesión con Google
         </Button>
       </div>
     </div>

@@ -58,7 +58,7 @@ export function NewTicketDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>+ Nuevo ticket</Button>
+        <Button className="bg-red-600 hover:bg-red-700 text-white">+ Nuevo ticket</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

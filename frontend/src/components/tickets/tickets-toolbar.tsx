@@ -36,6 +36,7 @@ export function TicketsToolbar({
               size="sm"
               variant={viewMode === "list" ? "default" : "ghost"}
               onClick={() => onViewModeChange("list")}
+              className={viewMode === "list" ? "bg-red-600 text-white" : ""}
             >
               Lista
             </Button>
@@ -43,6 +44,7 @@ export function TicketsToolbar({
               size="sm"
               variant={viewMode === "kanban" ? "default" : "ghost"}
               onClick={() => onViewModeChange("kanban")}
+              className={viewMode === "kanban" ? "bg-red-600 text-white" : ""}
             >
               Kanban
             </Button>
@@ -62,7 +64,7 @@ export function TicketsToolbar({
           value={filters.status ?? "all"}
           onValueChange={(v) => onFiltersChange({ ...filters, status: v })}
         >
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger className="w-[170px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -77,7 +79,7 @@ export function TicketsToolbar({
           value={filters.priority ?? "all"}
           onValueChange={(v) => onFiltersChange({ ...filters, priority: v })}
         >
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger className="w-[190px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

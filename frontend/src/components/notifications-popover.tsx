@@ -36,7 +36,7 @@ export function NotificationsPopover() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
+          <Bell className="!h-5 !w-5" />
           {unread > 0 && (
             <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
               {unread > 99 ? "99+" : unread}
