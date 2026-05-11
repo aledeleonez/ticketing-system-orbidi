@@ -80,6 +80,7 @@ export function TicketAttachments({ ticketId }: Props) {
         <input
           ref={fileInputRef}
           type="file"
+          accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.txt,.md,.zip"
           className="hidden"
           onChange={(e) => {
             const f = e.target.files?.[0];
